@@ -7,7 +7,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
-
+var test = app.Logger;
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -20,7 +20,8 @@ app.UseHttpsRedirection();
 //the API-endpoint of the validation
 app.MapGet("/cardvalidation", (string? cardNumber) =>
 {
-    return luhnValidation.luhnValidation.isValidLuhn(cardNumber);
+    app.Logger.LogInformation("card number input: " + cardNumber);
+    return luhnValidation.luhnValidation.isValidLuhn(cardNumber,app.Logger);
 })
 .WithName("GetCardValidation")
 .WithOpenApi();

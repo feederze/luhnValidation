@@ -17,7 +17,11 @@ namespace luhnValidation
             bool result = isValidLuhn(cardNumber);
             Assert.Equal(expected, result);
         }
-        static public bool isValidLuhn(string? cardNumber)
+
+        static public bool isValidLuhn(string? cardNumber) {
+            return isValidLuhn(cardNumber, null);
+        }
+        static public bool isValidLuhn(string? cardNumber,ILogger? logger)
         {
             // do not accept empty input
             if (string.IsNullOrWhiteSpace(cardNumber))
@@ -39,6 +43,8 @@ namespace luhnValidation
                 //return false if non-digit character is found
                 if (!char.IsDigit(cardNumber[i]))
                 {
+                    
+                    logger?.LogWarning("inappropriate input found: " + cardNumber[i]);
                     continue;
                 }
                 int n = int.Parse(cardNumber[i].ToString());
