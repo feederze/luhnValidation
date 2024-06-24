@@ -16,29 +16,9 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-var summaries = new[]
+app.MapGet("/cardvalidation", (string? cardNumber) =>
 {
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast = Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast")
-.WithOpenApi();
-
-app.MapGet("/cardvalidation", () =>
-{
-    return isValidLuhn("17893729974");
+    return isValidLuhn(cardNumber);
 })
 .WithName("GetCardValidation")
 .WithOpenApi();
@@ -60,11 +40,23 @@ bool isValidLuhn(string? cardNumber)
     //code based on the examples on wikipedia.
     int sum = 0;
     bool isDoublingValue = true;
-    int checkDigit = int.Parse(cardNumber[cardNumber.Length - 1].ToString());
+    int checkDigit = 0;
 
-    for (int i = cardNumber.Length - 2; i >= 0; i--)
+    for (int i = cardNumber.Length - 1; i >= 0; i--)
     {
+        //return false if non-digit character is found
+        if (!char.IsDigit(cardNumber[i]))
+        {
+            return false;
+        }
         int n = int.Parse(cardNumber[i].ToString());
+
+        //the last digit is used for validation.
+        if (i == cardNumber.Length - 1)
+        {
+            checkDigit = n;
+            continue;
+        }
 
         if (isDoublingValue)
         {
@@ -83,8 +75,4 @@ bool isValidLuhn(string? cardNumber)
         isDoublingValue = !isDoublingValue;
     }
     return (checkDigit == (10 - (sum % 10)));
-}
-internal record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
 }
