@@ -16,6 +16,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+//the API-endpoint of the validation
 app.MapGet("/cardvalidation", (string? cardNumber) =>
 {
     return isValidLuhn(cardNumber);
@@ -51,6 +52,7 @@ bool isValidLuhn(string? cardNumber)
         }
         int n = int.Parse(cardNumber[i].ToString());
 
+
         //the last digit is used for validation.
         if (i == cardNumber.Length - 1)
         {
@@ -74,5 +76,7 @@ bool isValidLuhn(string? cardNumber)
         sum += n;
         isDoublingValue = !isDoublingValue;
     }
+    //compare given check digit and the check digit by calculation
+    //pass if results match
     return (checkDigit == (10 - (sum % 10)));
 }
