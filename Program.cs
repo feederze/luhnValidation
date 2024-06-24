@@ -1,3 +1,7 @@
+using Microsoft.AspNetCore.Http.HttpResults;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System.Net;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,7 +25,9 @@ app.UseHttpsRedirection();
 app.MapGet("/cardvalidation", (string? cardNumber) =>
 {
     app.Logger.LogInformation("card number input: " + cardNumber);
-    return luhnValidation.luhnValidation.isValidLuhn(cardNumber,app.Logger);
+    var json = new { message = "number to Validate: " +cardNumber, valid = luhnValidation.luhnValidation.isValidLuhn(cardNumber, app.Logger) };
+
+    return json;
 })
 .WithName("GetCardValidation")
 .WithOpenApi();
